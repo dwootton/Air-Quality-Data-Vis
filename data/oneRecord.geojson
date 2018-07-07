@@ -1,0 +1,390 @@
+{
+   "type": "FeatureCollection",
+   "features": [
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8009108,40.665232 ]
+    },
+    "properties": {
+    "Sensor":"S-A-069",
+    "PPM":0.98
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8126722,40.6035682 ]
+    },
+    "properties": {
+    "Sensor":"S-A-144",
+    "PPM":1
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.7391326,40.7842616 ]
+    },
+    "properties": {
+    "Sensor":"S-A-145",
+    "PPM":3
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8612126,40.7720332 ]
+    },
+    "properties": {
+    "Sensor":"S-A-085",
+    "PPM":2.647
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8530362,40.7360564 ]
+    },
+    "properties": {
+    "Sensor":"S-A-024",
+    "PPM":6
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8112866,40.741004 ]
+    },
+    "properties": {
+    "Sensor":"S-A-025",
+    "PPM":null
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8465378,40.744734 ]
+    },
+    "properties": {
+    "Sensor":"S-A-011",
+    "PPM":0
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8370724,40.7494166 ]
+    },
+    "properties": {
+    "Sensor":"S-A-017",
+    "PPM":1
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8858598,40.7478438 ]
+    },
+    "properties": {
+    "Sensor":"S-A-141",
+    "PPM":1
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.846867,40.729463 ]
+    },
+    "properties": {
+    "Sensor":"S-A-013",
+    "PPM":0
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8743544,40.75533 ]
+    },
+    "properties": {
+    "Sensor":"S-A-033",
+    "PPM":0
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.9319764,40.7984694 ]
+    },
+    "properties": {
+    "Sensor":"S-A-021",
+    "PPM":1
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8431404,40.7272846 ]
+    },
+    "properties": {
+    "Sensor":"S-A-006",
+    "PPM":4
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.802795,40.7497344 ]
+    },
+    "properties": {
+    "Sensor":"S-A-040",
+    "PPM":1
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.934991,40.7038388 ]
+    },
+    "properties": {
+    "Sensor":"S-A-044",
+    "PPM":2
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8381228,40.7086868 ]
+    },
+    "properties": {
+    "Sensor":"S-A-029",
+    "PPM":3
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8729548,40.7145288 ]
+    },
+    "properties": {
+    "Sensor":"S-A-026",
+    "PPM":0
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8693857,40.78606 ]
+    },
+    "properties": {
+    "Sensor":"S-A-076",
+    "PPM":0.98
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8453886,40.6202742 ]
+    },
+    "properties": {
+    "Sensor":"S-A-140",
+    "PPM":0
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8565446,40.7392772 ]
+    },
+    "properties": {
+    "Sensor":"S-A-023",
+    "PPM":null
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.9297546,40.7864536 ]
+    },
+    "properties": {
+    "Sensor":"S-A-009",
+    "PPM":0
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8683253,40.74598133 ]
+    },
+    "properties": {
+    "Sensor":"S-A-030",
+    "PPM":0.333
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8380224,40.7200962 ]
+    },
+    "properties": {
+    "Sensor":"S-A-089",
+    "PPM":1
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8681605,40.78792617 ]
+    },
+    "properties": {
+    "Sensor":"S-A-037",
+    "PPM":3
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8226926,40.7403038 ]
+    },
+    "properties": {
+    "Sensor":"S-A-043",
+    "PPM":2
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8330644,40.7369384 ]
+    },
+    "properties": {
+    "Sensor":"S-A-018",
+    "PPM":1
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.9310042,40.7955392 ]
+    },
+    "properties": {
+    "Sensor":"S-A-035",
+    "PPM":2
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.9112908,40.8409586 ]
+    },
+    "properties": {
+    "Sensor":"S-A-090",
+    "PPM":0
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.746267,40.780065 ]
+    },
+    "properties": {
+    "Sensor":"S-A-010",
+    "PPM":1
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8810836,40.7545098 ]
+    },
+    "properties": {
+    "Sensor":"S-A-104",
+    "PPM":1.4
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.9072038,40.712506 ]
+    },
+    "properties": {
+    "Sensor":"S-A-133",
+    "PPM":1
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.937881,40.7812682 ]
+    },
+    "properties": {
+    "Sensor":"S-A-092",
+    "PPM":3
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.921221,40.79692833 ]
+    },
+    "properties": {
+    "Sensor":"S-A-101",
+    "PPM":0.22
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.8085098,40.7450308 ]
+    },
+    "properties": {
+    "Sensor":"S-A-135",
+    "PPM":0
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ -111.913033,40.6262116 ]
+    },
+    "properties": {
+    "Sensor":"S-A-095",
+    "PPM":5.18
+    }
+  }
+]
+}
