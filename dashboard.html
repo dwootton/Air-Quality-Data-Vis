@@ -44,19 +44,8 @@
     L.geoJson(data,{
     pointToLayer: function (feature, latlng) {
             return L.marker(latlng, {icon: ((feature.properties.PPM > .5) ? readingB : readingG)});
-    }
+        }
     }).addTo(map);
-    
-    
-    // {
-    //     onEachFeature:onEachFeature
-    // }).addTo(map);
-
-    
-    
-    // create an icon object
-
-
    });
  
 function onEachFeature(feature, layer) {
