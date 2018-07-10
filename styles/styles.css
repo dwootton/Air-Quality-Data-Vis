@@ -1,0 +1,27 @@
+
+    .line-chart
+    {
+        border: 1px solid lightgray;
+    }
+    
+    .spike-selector
+    {
+        height: 300px;
+        width: 300px;
+        overflow: scroll;
+        border: 1px solid lightgray;
+    }
+    
+    .spikes {
+        border: 1px solid red;
+        height: 100px;
+        width: 250px;
+        margin: 10 auto;
+    }
+    .hover {
+        background-color:grey;
+    }
+    
+    body {
+      font-family: serif;
+    }
