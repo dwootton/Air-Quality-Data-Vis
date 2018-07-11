@@ -1,3 +1,4 @@
+  
   var modelData = [];
   // sets up the lats and lons for finding the closest model point
   var lats = [40.81048, 40.78696, 40.76345, 40.73993, 40.71642, 40.69291, 40.66939, 40.64588, 40.62236, 40.59885], 
@@ -21,14 +22,13 @@
     }  
     
   var processedData;
-  //grabs the JSON data
+  //grabs the JSON data from sensors and model
   $.getJSON("data/AllSensorData.json",function(data){
       $.getJSON("data/stacked.json",function(stackedData){
             var spikeSelectDiv = d3.select(".spike-selector");
             //runs the signal detection code on the data
             processedData = performSignalDetection(data);
-            
-            
+
             var spikes = [];
             var modelPts = [];
             
@@ -80,7 +80,6 @@
                         }));
                         
                         modelPts[modelPts.length-1].time =  times[closestTimeIndexAfter];
-                        
                     }
                 }
             })
@@ -89,11 +88,11 @@
             .data(spikes)
             .enter()
             .append("button")
+            .classed("btn",true)
             .classed("btn-primary",true)
             .classed("spikes",true)
             .text(function(d){
                 return d.id + " " + d.measurements[60].date;
-                
             })
             
         var spikePtsForBinding, modelPtsForBinding;
@@ -255,7 +254,6 @@ function drawChart(data, preModelData) {
             sensorData[i].value = Number(sensorData[i].value);
             sensorData[i].date = Date.parse(sensorData[i].date);
         }
-        console.log(preModelData);
 
         let modelData = [];
         for(let i = 0; i < preModelData.length; i++){
@@ -265,8 +263,6 @@ function drawChart(data, preModelData) {
             })
         }
         
-        console.log(modelData);
-
         var svgWidth = 960, svgHeight = 500;
         var margin = { top: 20, right: 20, bottom: 50, left: 50 };
         var width = svgWidth - margin.left - margin.right;
