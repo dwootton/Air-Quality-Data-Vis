@@ -17,6 +17,20 @@
             return L.marker(latlng, {icon: ((feature.properties.PPM > .5) ? readingB : readingG)});
         }
     }).addTo(map);
+    console.log(data);
+    L.geoJson(data,{
+        onEachFeature: function(feature, layer) {
+            if (feature.properties && feature.properties.Sensor) {
+                layer.bindPopup(feature.properties.Sensor, {closeButton: false, offset: L.point(0, -20)});
+                layer.on('mouseover', function() { layer.openPopup(); });
+                layer.on('mouseout', function() { layer.closePopup(); });
+            }
+        },
+        pointToLayer: function (feature, latlng) {
+            return L.marker(latlng, {icon: ((feature.properties.PPM > .5) ? readingB : readingG)});
+        }
+    }).addTo(map);
+    
    });
   //Signal Analysis Section
   var modelData = [];
