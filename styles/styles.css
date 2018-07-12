@@ -33,6 +33,10 @@
         background-color:grey;
     }
     
+    .clicked {
+        background-color:black;
+    }
+    
     body {
       font-family: serif;
     }

@@ -1,4 +1,24 @@
-  
+    //Leaflet Map Section
+    var map = L.map('map').setView([40.7, -111.9], 10);
+
+  // load a tile layer
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        maxZoom: 18,
+        id: 'mapbox.streets',
+        accessToken: 'pk.eyJ1IjoiZHlsYW53b290dG9uIiwiYSI6ImNqamJ1NTQ0ZzN1cG8za29ncXdndHVkYTMifQ.QfUWU-MMXDfus5OMeRCf0Q'
+    }).addTo(map);
+    
+   // load GeoJSON from an external file
+  $.getJSON("data/oneRecord.geojson",function(data){
+    // add GeoJSON layer to the map once the file is loaded
+    L.geoJson(data,{
+    pointToLayer: function (feature, latlng) {
+            return L.marker(latlng, {icon: ((feature.properties.PPM > .5) ? readingB : readingG)});
+        }
+    }).addTo(map);
+   });
+  //Signal Analysis Section
   var modelData = [];
   // sets up the lats and lons for finding the closest model point
   var lats = [40.81048, 40.78696, 40.76345, 40.73993, 40.71642, 40.69291, 40.66939, 40.64588, 40.62236, 40.59885], 
@@ -122,11 +142,11 @@
         $('.spikes').click(function(){
             spikePtsForBinding = $.extend(true,{},spikes);
             let spikeIndex = $('.spikes').index(this);
+            $(this).toggleClass('clicked')
             var svg = d3.select("svg");
             svg.selectAll("*").remove();
             modelPtsForBinding = modelPts.slice(spikeIndex*3,spikeIndex*3+3)
-    
-            
+            map.setView(spikePtsForBinding[spikeIndex].coordinates, 13)
             drawChart(spikePtsForBinding[spikeIndex].measurements, modelPtsForBinding)
         });
         
@@ -160,25 +180,7 @@
     });
     
   // initialize the map
-  var map = L.map('map').setView([40.7, -111.9], 13);
 
-  // load a tile layer
-    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        maxZoom: 18,
-        id: 'mapbox.streets',
-        accessToken: 'pk.eyJ1IjoiZHlsYW53b290dG9uIiwiYSI6ImNqamJ1NTQ0ZzN1cG8za29ncXdndHVkYTMifQ.QfUWU-MMXDfus5OMeRCf0Q'
-    }).addTo(map);
-    
-   // load GeoJSON from an external file
-  $.getJSON("data/oneRecord.geojson",function(data){
-    // add GeoJSON layer to the map once the file is loaded
-    L.geoJson(data,{
-    pointToLayer: function (feature, latlng) {
-            return L.marker(latlng, {icon: ((feature.properties.PPM > .5) ? readingB : readingG)});
-        }
-    }).addTo(map);
-   });
  
 function onEachFeature(feature, layer) {
         var lat = feature.geometry.coordinates[0];
