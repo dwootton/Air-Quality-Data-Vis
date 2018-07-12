@@ -345,7 +345,8 @@ function drawChart(data, preModelData) {
         var height = svgHeight - margin.top - margin.bottom;
         var svg = d3.select('svg')
             .attr("width", svgWidth)
-            .attr("height", svgHeight);
+            .attr("height", svgHeight)
+            .attr("id", "visualization");
             
         var g = svg.append("g")
             .attr("transform", 
@@ -371,10 +372,13 @@ function drawChart(data, preModelData) {
             //   .defined(function(d) { 
             //       return d.x < xRange[1] && dx > xRange[0] && d.y > yRange[0] && d.y< yRange[1]; 
             //     })
+                .curve(d3.curveLinear);
                x.domain(xRange)
                y.domain(yRange);
-               
-               
+        console.log("passed interp")
+        
+            
+       
         g.append("g")
            .attr("transform", "translate(0," + height + ")")
            .call(d3.axisBottom(x))
@@ -394,7 +398,38 @@ function drawChart(data, preModelData) {
            .attr("text-anchor", "middle")
            .text("PPM 2.5");
            
-                  
+        let sensorPath = g.append("path")
+            .attr("d", line(sensorData))
+              .attr("stroke", "steelblue")
+              .attr("stroke-width", "2")
+              .attr("fill", "none");
+        
+        var totalSensorLength = sensorPath.node().getTotalLength();
+
+        sensorPath
+          .attr("stroke-dasharray", totalSensorLength + " " + totalSensorLength)
+          .attr("stroke-dashoffset", totalSensorLength)
+          .transition()
+            .duration(500)
+            .ease(d3.easeLinear)
+            .attr("stroke-dashoffset", 0);
+        /*    change to model 
+        sensorPath = g.append("path")
+            .attr("d", line(sensorData))
+              .attr("stroke", "steelblue")
+              .attr("stroke-width", "2")
+              .attr("fill", "none");
+        
+        var totalSensorLength = sensorPath.node().getTotalLength();
+
+        sensorPath
+          .attr("stroke-dasharray", totalSensorLength + " " + totalSensorLength)
+          .attr("stroke-dashoffset", totalSensorLength)
+          .transition()
+            .duration(500)
+            .ease(d3.easeLinear)
+            .attr("stroke-dashoffset", 0);
+        */
         g.append("path")
             .datum(modelData)
             .attr("fill", "none")
@@ -403,7 +438,7 @@ function drawChart(data, preModelData) {
             .attr("stroke-linecap", "round")
             .attr("stroke-width", 2)
             .attr("d", line);
-            
+        /*    
         g.append("path")
             .datum(sensorData)
             .attr("fill", "none")
@@ -412,7 +447,7 @@ function drawChart(data, preModelData) {
             .attr("stroke-linecap", "round")
             .attr("stroke-width", 1.5)
             .attr("d", line);
-            
+        */
         var legend_keys = ["Model Data", "Sensor Data"]
 
         var lineLegend = svg.selectAll(".lineLegend").data(legend_keys)
