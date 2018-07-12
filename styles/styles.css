@@ -1,27 +1,45 @@
-
+    h1 {
+        text-align: middle;
+    }
+    
     .line-chart
     {
         border: 1px solid lightgray;
+        margin: 0 auto;
+        width: 900px;
     }
     
     .spike-selector
     {
-        height: 300px;
-        width: 300px;
+        height: 500px;
+        width: 200px;
         overflow: scroll;
         border: 1px solid lightgray;
+        display:inline-block;
+    }
+
+    .container {
+        padding-bottom: 5px;
     }
     
     .spikes {
-        border: 1px solid red;
-        height: 100px;
-        width: 250px;
+        height: 50px;
+        width: 180px;
         margin: 10 auto;
+        padding-right: 10px;
     }
+    
     .hover {
         background-color:grey;
     }
     
     body {
       font-family: serif;
+    }
+    
+    #map {
+        display:inline-block;
+    }
+    .container {
+        width: 1100px;
     }

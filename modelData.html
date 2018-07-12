@@ -4,7 +4,7 @@
   <title>A Leaflet map!</title>
 
   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
-  <link rel="stylesheet" href="styles/styles.css"/>
+  <link rel="stylesheet" href="styles/styles.css?v1"/>
 
   <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
   <script src="data/jquery-2.1.1.min.js"></script> 
@@ -20,15 +20,26 @@
 
 <!-- Latest compiled JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
+  <style>
+    #map{ width: 700px; height: 500px; }
+  </style>
 </head>
 <body>
-<div class="spike-selector"> </div>
-
-<svg width="960" height="500" class = "line-chart"></svg>
   
+  <h1 align="center">AQ Spike Debugger</h1>
+  
+<div class="container">
+    <div class="col-xl-1 spike-selector"> </div>
+    <div id="map" class = "col-xl-8"></div>
+</div>
 
-    <script src="modelData.js"></script>
+  
+<div class="container">
+  <svg class = "col-xl-12 line-chart"></svg>
+</div>
+
+<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+<script src="modelDataWithMap.js"></script>
 
 </body>
 </html>
