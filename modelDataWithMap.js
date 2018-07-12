@@ -31,6 +31,29 @@
         }
     }).addTo(map);
     
+    var legend = L.control({position: 'topright'});
+
+    legend.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'info legend'),
+            grades = ["Sensor"],
+            labels = ['good.png'];
+    
+        // loop through our density intervals and generate a label with a colored square for each interval
+        for (var i = 0; i < grades.length; i++) {
+            div.innerHTML +=
+                grades[i] + (" <img src="+ labels[i] +" height='30' width='30'>") +'<br>';
+                div.style.padding = "10";
+                div.style.opacity = ".8"
+                div.style.color = "black"
+                div.style.backgroundColor = "#cccccc";
+
+        }
+    
+        return div;
+    };
+    
+    legend.addTo(map);
+    
    });
   //Signal Analysis Section
   var modelData = [];
@@ -447,10 +470,19 @@ function drawChart(data, preModelData) {
         g.append("path")
             .datum(modelData)
             .attr("fill", "none")
-            .attr("stroke", "red")
+            .attr("stroke", "gray")
             .attr("stroke-linejoin", "round")
             .attr("stroke-linecap", "round")
             .attr("stroke-width", 2)
+            .attr("d", line);
+            
+        g.append("path")
+            .datum([sensorData[60]])
+            .attr("fill", "none")
+            .attr("stroke", "red")
+            .attr("stroke-linejoin", "round")
+            .attr("stroke-linecap", "round")
+            .attr("stroke-width", 6)
             .attr("d", line);
         /*    
         g.append("path")
@@ -462,7 +494,7 @@ function drawChart(data, preModelData) {
             .attr("stroke-width", 1.5)
             .attr("d", line);
         */
-        var legend_keys = ["Model Data", "Sensor Data"]
+        var legend_keys = ["Model Data", "Sensor Data", "Spike Point"]
 
         var lineLegend = svg.selectAll(".lineLegend").data(legend_keys)
             .enter().append("g")
@@ -477,9 +509,11 @@ function drawChart(data, preModelData) {
         lineLegend.append("rect")
             .attr("fill", function (d, i) {
                 if(d === "Model Data"){
-                    return "red";
-                } else {
+                    return "gray";
+                } else if(d === "Sensor Data") {
                     return "steelblue"
+                } else {
+                    return "red"
                 }
             })
             .attr("width", 10).attr("height", 10);
