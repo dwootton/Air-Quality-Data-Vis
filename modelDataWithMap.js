@@ -43,8 +43,8 @@
             div.innerHTML +=
                 grades[i] + (" <img src="+ labels[i] +" height='30' width='30'>") +'<br>';
                 div.style.padding = "10";
-                div.style.opacity = ".8"
-                div.style.color = "black"
+                div.style.opacity = ".8";
+                div.style.color = "black";
                 div.style.backgroundColor = "#cccccc";
 
         }
@@ -105,15 +105,16 @@
                             id: monitor.id,
                             coordinates: monitor.coordinates,
                             closestModel: [closestLat,closestLon],
-                            measurements: monitor.values.slice(i+60,i+180),// offset by 120 as the lag offsets the dates/times
+                            measurements: monitor.values.slice(i,i+120),// offset by 60 as the lag offsets the dates/times
                             reading: monitor.signalDetection.signals[i],
+                            signal: monitor.signalDetection.signals.slice(i-60,i+60)
                         });
                         
                         // and find the closest time corresponding to that
-                        closestTimeIndex = closestIndx(timesNumeric, Date.parse(monitor.values[i+120].date)) // parses the date to a number and and finds the closest value
+                        closestTimeIndex = closestIndx(timesNumeric, Date.parse(monitor.values[i].date)) // parses the date to a number and and finds the closest value
                         
-                        let closestTimeIndexBefore = closestIndx(timesNumeric, Date.parse(monitor.values[i+120].date)-3600000) // parses the date to a number and and finds the closest value
-                        let closestTimeIndexAfter = closestIndx(timesNumeric, Date.parse(monitor.values[i+120].date)+3600000) // parses the date to a number and and finds the closest value
+                        let closestTimeIndexBefore = closestIndx(timesNumeric, Date.parse(monitor.values[i].date)-3600000) // parses the date to a number and and finds the closest value
+                        let closestTimeIndexAfter = closestIndx(timesNumeric, Date.parse(monitor.values[i].date)+3600000) // parses the date to a number and and finds the closest value
                         
                         modelPts.push(stackedData.filter(function(point){
                             return point.lat == closestLat &&
@@ -152,28 +153,7 @@
             .html(function(d){
                 return d.id + "<br/> "+ d.measurements[60].date.slice(0,17)
             });
-            /*
-            .append('tspan')
-              .attr('x', 0)
-              .attr('y', 10)
-              .text(function(d) { return "spike"; })
-            .append('tspan')
-              .attr('x', 0)
-              .attr('dy', 20)
-              .text(function(d) { return d.measurements[60].date.slice(0,17); })
 
-            
-            .append("text")
-                .text(function(d){
-                    return d.id;
-                })
-                .attr("dy", "1em")
-            .append("text")
-                .text( function(d){
-                    return d.measurements[60].date.slice(0,17);
-                })
-                .attr("dy", "1em");// you can vary how far apart it shows up
-*/
             
         var spikePtsForBinding, modelPtsForBinding;
         $('.spikes').click(function(){
@@ -184,6 +164,7 @@
             svg.selectAll("*").remove();
             modelPtsForBinding = modelPts.slice(spikeIndex*3,spikeIndex*3+3)
             map.setView(spikePtsForBinding[spikeIndex].coordinates, 13)
+            console.log(spikePtsForBinding[spikeIndex]);
             drawChart(spikePtsForBinding[spikeIndex].measurements, modelPtsForBinding)
         });
         
@@ -241,9 +222,9 @@ function performSignalDetection(data){
         if(!monitor.values){
             return;
         }
-        let SIG_LAG = 120;
+        let SIG_LAG = 60;
         let SIG_THRESH = 10;
-        let SIG_INF = 1;
+        let SIG_INF = .001;
         //monitor.signalDetection = smoothedZScore(monitor.values,SIG_LAG, SIG_THRESH,SIG_INF);
         monitor.signalDetection = smoothedZScore2(monitor.values,SIG_LAG, SIG_THRESH,SIG_INF);
     })//end data.forEach
@@ -362,7 +343,8 @@ function closestIndx(array,num){
 
 function drawChart(data, preModelData) {
         var sensorData = data;
-        let day = sensorData[60].date;
+        let spikePoint = 60;
+        let day = sensorData[spikePoint].date;
         for(let i = 0; i < sensorData.length; i++){
             sensorData[i].value = Number(sensorData[i].value);
             sensorData[i].date = Date.parse(sensorData[i].date);
@@ -371,7 +353,7 @@ function drawChart(data, preModelData) {
         let modelData = [];
         for(let i = 0; i < preModelData.length; i++){
             modelData.push({
-                date : Date.parse(preModelData[i].time) - 3600000, // -1 hour to fix the time zone difference
+                date : Date.parse(preModelData[i].time), //- 3600000, // -1 hour to fix the time zone difference
                 value : preModelData[i][0].value,
             })
         }
@@ -477,7 +459,7 @@ function drawChart(data, preModelData) {
             .attr("d", line);
             
         g.append("path")
-            .datum([sensorData[60]])
+            .datum([sensorData[spikePoint]])
             .attr("fill", "none")
             .attr("stroke", "red")
             .attr("stroke-linejoin", "round")

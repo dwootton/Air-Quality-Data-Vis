@@ -33,6 +33,13 @@
         margin-top:0;
     }
     
+    html *
+    {
+       font-size: 1em !important;
+       color: #000 !important;
+       font-family: 'Raleway', sans-serif !important;
+    }
+    
     .hover {
         background-color:grey;
     }
