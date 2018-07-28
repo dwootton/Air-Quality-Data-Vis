@@ -432,23 +432,7 @@ function drawChart(data, preModelData) {
             .duration(500)
             .ease(d3.easeLinear)
             .attr("stroke-dashoffset", 0);
-        /*    change to model 
-        sensorPath = g.append("path")
-            .attr("d", line(sensorData))
-              .attr("stroke", "steelblue")
-              .attr("stroke-width", "2")
-              .attr("fill", "none");
-        
-        var totalSensorLength = sensorPath.node().getTotalLength();
 
-        sensorPath
-          .attr("stroke-dasharray", totalSensorLength + " " + totalSensorLength)
-          .attr("stroke-dashoffset", totalSensorLength)
-          .transition()
-            .duration(500)
-            .ease(d3.easeLinear)
-            .attr("stroke-dashoffset", 0);
-        */
         g.append("path")
             .datum(modelData)
             .attr("fill", "none")
@@ -456,6 +440,7 @@ function drawChart(data, preModelData) {
             .attr("stroke-linejoin", "round")
             .attr("stroke-linecap", "round")
             .attr("stroke-width", 2)
+            .transition()
             .attr("d", line);
             
         g.append("path")
@@ -465,6 +450,7 @@ function drawChart(data, preModelData) {
             .attr("stroke-linejoin", "round")
             .attr("stroke-linecap", "round")
             .attr("stroke-width", 6)
+            .transition()
             .attr("d", line);
         /*    
         g.append("path")
