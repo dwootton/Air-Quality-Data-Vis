@@ -1,5 +1,10 @@
     h1 {
         text-align: middle;
+        font-size: 3em;
+    }
+    
+    span {
+        text-align: middle;
     }
     
     .line-chart

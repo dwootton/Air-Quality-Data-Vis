@@ -55,15 +55,16 @@
     legend.addTo(map);
     
    });
-  //Signal Analysis Section
+  // Signal Analysis Section
   var modelData = [];
+  
   // sets up the lats and lons for finding the closest model point
   var lats = [40.81048, 40.78696, 40.76345, 40.73993, 40.71642, 40.69291, 40.66939, 40.64588, 40.62236, 40.59885], 
       lons = [-111.713403, -111.7325994, -111.7517958, -111.7709922, -111.7901886, -111.809385, -111.8285814, -111.8477778, -111.8669742, -111.8861706, -111.905367, -111.9245634, -111.9437598, -111.9629562, -111.9821526, -112.001349],
       times = [],
       timesNumeric = [];
       
-     //sets up the times to find closest time point on model
+     // sets up the times to find closest time point on model
     let hour = 7;
     for(var day = 1; day < 14; day++){
         while(hour < 24){
@@ -79,10 +80,12 @@
     }  
     
   var processedData;
+  
   //grabs the JSON data from sensors and model
   $.getJSON("data/AllSensorData.json",function(data){
       $.getJSON("data/stacked.json",function(stackedData){
             var spikeSelectDiv = d3.select(".spike-selector");
+            
             //runs the signal detection code on the data
             processedData = performSignalDetection(data);
 
@@ -98,9 +101,13 @@
                 let closestLat = closest(lats,monitor.coordinates[0]);
                 let closestLon = closest(lons,monitor.coordinates[1]);
                 let closestTimeIndex;
-                
+                console.log(monitor);
+
                 for (var i = 0; i < monitor.signalDetection.signals.length ; i++) { //for each measurment in the monitor
-                    if (monitor.signalDetection.signals[i][1] === 1) { //if the signal value is 1 (ie there is a peak)
+                    if (parseInt(monitor.values[i+60].value) > 40){//monitor.signalDetection.signals[i][1] === 1 ) { //if the signal value is 1 (ie there is a peak)
+                        console.log(i);
+                        console.log(monitor)
+                        console.log(parseInt(monitor.values[i+60].value))
                         spikes.push({
                             id: monitor.id,
                             coordinates: monitor.coordinates,
@@ -116,6 +123,7 @@
                         let closestTimeIndexBefore = closestIndx(timesNumeric, Date.parse(monitor.values[i].date)-3600000) // parses the date to a number and and finds the closest value
                         let closestTimeIndexAfter = closestIndx(timesNumeric, Date.parse(monitor.values[i].date)+3600000) // parses the date to a number and and finds the closest value
                         
+                        // add preceding model point
                         modelPts.push(stackedData.filter(function(point){
                             return point.lat == closestLat &&
                                   point.long == closestLon &&
@@ -123,14 +131,15 @@
                         }));
                         modelPts[modelPts.length-1].time =  times[closestTimeIndexBefore];
                         
-                        //push that point onto the modelPts array
+                        //push the closest model point onto array
                         modelPts.push(stackedData.filter(function(point){
                             return point.lat == closestLat &&
                                    point.long == closestLon &&
                                    point.x == closestTimeIndex;
                         }));
+                        
                         modelPts[modelPts.length-1].time =  times[closestTimeIndex];
-
+                        // add subsequent model point
                         modelPts.push(stackedData.filter(function(point){
                             return point.lat == closestLat &&
                                   point.long == closestLon &&
@@ -142,6 +151,7 @@
                 }
             })
         
+        // adds a button for each of the spikes
         var spikeDivs = spikeSelectDiv.selectAll("div")
             .data(spikes)
             .enter()
@@ -154,7 +164,7 @@
                 return d.id + "<br/> "+ d.measurements[60].date.slice(0,17)
             });
 
-            
+        // attaches functionality to a click event    
         var spikePtsForBinding, modelPtsForBinding;
         $('.spikes').click(function(){
             spikePtsForBinding = $.extend(true,{},spikes);
@@ -163,20 +173,24 @@
             var svg = d3.select("svg");
             svg.selectAll("*").remove();
             modelPtsForBinding = modelPts.slice(spikeIndex*3,spikeIndex*3+3)
+            console.log(modelPtsForBinding);
             map.setView(spikePtsForBinding[spikeIndex].coordinates, 13)
             console.log(spikePtsForBinding[spikeIndex]);
             drawChart(spikePtsForBinding[spikeIndex].measurements, modelPtsForBinding)
         });
         
+        // Changes styling if button is hovered
         $('.spikes').hover(function(){
             $(this).toggleClass('hover')
         });
 
+        
         var svg = d3.select("svg"),
             margin = {top: 20, right: 20, bottom: 30, left: 50},
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        
         
         let spikeZero = $.extend(true,{},spikes[0].measurements);
         drawChart(spikeZero, modelPts.slice(0,3))
@@ -197,7 +211,6 @@
         iconUrl: 'bad.png',
     });
     
-  // initialize the map
 
  
 function onEachFeature(feature, layer) {
@@ -205,7 +218,8 @@ function onEachFeature(feature, layer) {
         var lon = feature.geometry.coordinates[1];
         var popupContent; 
         var mymarker;
-        console.log(mymarker)
+        
+        //adds an appropriate colored marker based on reading val
         if(feature.properties.PPM > .5) {
             mymarker = L.marker([lat, lon], {icon: readingB}).addTo(map);
             popupContent = feature.properties.Sensor
@@ -214,9 +228,16 @@ function onEachFeature(feature, layer) {
             mymarker = L.marker([lat, lon], {icon: readingG}).addTo(map);
             popupContent = feature.properties.Sensor
         }
-        //marker.bindPopup(popupContent);
+        
 }
 
+/**
+ * Sets up the parameters for the ZScored algorithm
+ *
+ *
+ * @return
+ *   the input data containing a new attribute with signal data from the the ZScored Algorithm.
+ */
 function performSignalDetection(data){
     data.forEach(function(monitor){
         if(!monitor.values){
@@ -231,6 +252,14 @@ function performSignalDetection(data){
     return data;
 }//end function performSignalDetection
 
+/**
+ * The ZScore Signal Detection algorithm uses a moving window and the standard deviation
+ * of that window to determine if a spike is uncharacteristic.
+ *
+ *
+ * @return
+ *   the input data containing a new attribute with signal data from the the ZScored Algorithm.
+ */
 function smoothedZScore2(data,lag,threshold,influence){
     let y = data;                           // Copy Variable name to 'y' since so much of this was written with 'y'
     let yVals = data.map(function(val){     // extract y values from the {date, value} object
@@ -289,22 +318,43 @@ function smoothedZScore2(data,lag,threshold,influence){
     }//end for i
 
     //remove the zero entries from 'signals
-
     let measurementPairs = signals.slice(lag);
+    
     return { signals:measurementPairs, avgFilter:avgFilter, stdFilter:stdFilter};
 }//end smoothedZScore2
 
+/**
+ * Averages the inputted array.
+ *
+ *
+ * @return
+ *   the average of the array
+ */
 function average(arr){
     return arr.reduce((a,b) => a + b, 0) / arr.length;
 }
 
-function stanDeviate(theData){
-    var meanOfOrg = (theData.reduce(function(l,r){return l+r;}))/theData.length;
-    var theSqrdSet = theData.map(function(el){ return Math.pow((el - meanOfOrg),2)});
+/**
+ * Determines the standard deviation of the inputted array
+ *
+ *
+ * @return
+ *   the standard deviation of the array
+ */
+function stanDeviate(arr){
+    var meanOfOrg = (arr.reduce(function(l,r){return l+r;}))/arr.length;
+    var theSqrdSet = arr.map(function(el){ return Math.pow((el - meanOfOrg),2)});
     var theResult = Math.sqrt((theSqrdSet.reduce(function(l,r){return l+r;}))/theSqrdSet.length);
     return theResult;
 }
 
+/**
+ * Determines if the object is empty
+ *
+ *
+ * @return
+ *   True or false depending on if the object is empty
+ */
 function isEmpty(obj) {
     for(var key in obj) {
         if(obj.hasOwnProperty(key))
@@ -313,6 +363,13 @@ function isEmpty(obj) {
     return true;
 }
 
+/**
+ * Finds the closest value in an array to an inputted number
+ * 
+ *
+ * @return
+ *   the index of the closest value in an array
+ */
 function closest(array,num){
     var i=0;
     var minDiff=1000;
@@ -327,6 +384,13 @@ function closest(array,num){
     return ans;
 }
 
+/**
+ * Finds the closest value in an array to an inputted time
+ * 
+ *
+ * @return
+ *   the index of the closest value in an array
+ */
 function closestIndx(array,num){
     var i=0;
     var minDiff= 9007199254740990;
@@ -341,6 +405,13 @@ function closestIndx(array,num){
     return minIndex;
 }
 
+/**
+ * Updates the line chart with the new data from a selected spike
+ * 
+ *
+ * @return
+ *   the index of the closest value in an array
+ */
 function drawChart(data, preModelData) {
         var sensorData = data;
         let spikePoint = 60;
@@ -359,7 +430,7 @@ function drawChart(data, preModelData) {
         }
         
         var svgWidth = 800, svgHeight = 350;
-        var margin = { top: 20, right: 20, bottom: 50, left: 50 };
+        var margin = {top: 20, right: 20, bottom: 50, left: 50 };
         var width = svgWidth - margin.left - margin.right;
         var height = svgHeight - margin.top - margin.bottom;
         var svg = d3.select('svg')
@@ -377,27 +448,24 @@ function drawChart(data, preModelData) {
         
         var y = d3.scaleLinear()
             .rangeRound([height, 0]);
+            
         let xRange = d3.extent(sensorData, function(d) { return d.date })
         // This code fixes the display to display both the model and the sensor data
         let yRange = d3.extent(sensorData, function(d) { return d.value });
+        
         // if model data is less than smallest sensor value, change the left axis extent (else do nothing)
-        yRange[0] > modelData[0].value ? (yRange[0] = modelData[0].value-1): yRange[0]; 
+        yRange[0] > modelData[1].value ? (yRange[0] = modelData[1].value-1): yRange[0]; 
+        
         // if model data is more than largest sensor value, change the left axis extent (else do nothing)
-        yRange[1] < modelData[0].value ? (yRange[1] = modelData[0].value+1): yRange[1];
+        yRange[1] < modelData[1].value ? (yRange[1] = modelData[1].value+1): yRange[1];
 
         var line = d3.line()
                .x(function(d) { return x(d.date)})
                .y(function(d) { return y(d.value)})
-            //   .defined(function(d) { 
-            //       return d.x < xRange[1] && dx > xRange[0] && d.y > yRange[0] && d.y< yRange[1]; 
-            //     })
                 .curve(d3.curveLinear);
                x.domain(xRange)
                y.domain(yRange);
-        console.log("passed interp")
-        
-            
-       
+
         g.append("g")
            .attr("transform", "translate(0," + height + ")")
            .call(d3.axisBottom(x))
@@ -424,7 +492,14 @@ function drawChart(data, preModelData) {
               .attr("fill", "none");
         
         var totalSensorLength = sensorPath.node().getTotalLength();
-
+        //create clipPath 
+        var clipPath = g.append("defs")
+            .append("clipPath")
+            .attr("id", "clip")
+            .append("rect")
+            .attr("width", width)
+            .attr("height", height);
+            
         sensorPath
           .attr("stroke-dasharray", totalSensorLength + " " + totalSensorLength)
           .attr("stroke-dashoffset", totalSensorLength)
@@ -441,6 +516,7 @@ function drawChart(data, preModelData) {
             .attr("stroke-linecap", "round")
             .attr("stroke-width", 2)
             .transition()
+            .attr("clip-path", "url(#clip)")
             .attr("d", line);
             
         g.append("path")
