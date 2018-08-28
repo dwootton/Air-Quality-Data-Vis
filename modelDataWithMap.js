@@ -430,7 +430,7 @@ function drawChart(data, preModelData) {
         }
         
         var svgWidth = 800, svgHeight = 350;
-        var margin = {top: 20, right: 20, bottom: 50, left: 50 };
+        var margin = {top: 30, right: 30, bottom: 60, left: 60 };
         var width = svgWidth - margin.left - margin.right;
         var height = svgHeight - margin.top - margin.bottom;
         var svg = d3.select('svg')
@@ -564,9 +564,9 @@ function drawChart(data, preModelData) {
 
         svg.append("text")
             .attr("x", (margin.left + width/2))             
-            .attr("y", margin.top)
+            .attr("y", margin.top/1.5)
             .attr("text-anchor", "middle")  
-            .attr("font-size", "16px")  
+            .attr("font-size", "13px")  
             .attr("font-weight", "bold")
             .text("Spike at: " + day);
 
