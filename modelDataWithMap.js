@@ -64,7 +64,20 @@
       times = [],
       timesNumeric = [];
       
-     // sets up the times to find closest time point on model
+    // sets up the times to find closest time point on model
+    
+    let initialTime = new Date(2018,2,1,7)
+       ,endTime     = new Date(2018,2,13,7)
+       ,hourMillisec =  60 * 60 * 1000
+   ;
+   
+   // Add an extra hour to each time point for the model
+    for (let q = initialTime; q <= endTime; q = new Date(q.getTime() + hourMillisec)) {
+      times.push(q);
+      timesNumeric.push(q);
+    }
+    
+    /*
     let hour = 7;
     for(var day = 1; day < 14; day++){
         while(hour < 24){
@@ -78,7 +91,7 @@
         }
         hour = 0;
     }  
-    
+    */
   var processedData;
   
   //grabs the JSON data from sensors and model
@@ -101,13 +114,10 @@
                 let closestLat = closest(lats,monitor.coordinates[0]);
                 let closestLon = closest(lons,monitor.coordinates[1]);
                 let closestTimeIndex;
-                console.log(monitor);
 
                 for (var i = 0; i < monitor.signalDetection.signals.length ; i++) { //for each measurment in the monitor
+
                     if (parseInt(monitor.values[i+60].value) > 40){//monitor.signalDetection.signals[i][1] === 1 ) { //if the signal value is 1 (ie there is a peak)
-                        console.log(i);
-                        console.log(monitor)
-                        console.log(parseInt(monitor.values[i+60].value))
                         spikes.push({
                             id: monitor.id,
                             coordinates: monitor.coordinates,
@@ -117,13 +127,19 @@
                             signal: monitor.signalDetection.signals.slice(i-60,i+60)
                         });
                         
+                        console.log("the monitor date was " + monitor.values[i].date)
+                        console.log("the monitor numeric time was " + Date.parse(monitor.values[i].date))
+                        
+
                         // and find the closest time corresponding to that
                         closestTimeIndex = closestIndx(timesNumeric, Date.parse(monitor.values[i].date)) // parses the date to a number and and finds the closest value
-                        
-                        let closestTimeIndexBefore = closestIndx(timesNumeric, Date.parse(monitor.values[i].date)-3600000) // parses the date to a number and and finds the closest value
+                        console.log("TEST " + monitor.values[i].date + " ---- " +Date.parse(monitor.values[i].date))
+                        let closestTimeIndexBefore = closestIndx(timesNumeric, Date.parse(monitor.values[i].date) -3600000) // parses the date to a number and and finds the closest value
                         let closestTimeIndexAfter = closestIndx(timesNumeric, Date.parse(monitor.values[i].date)+3600000) // parses the date to a number and and finds the closest value
-                        
+                        let closestTimeIndexAfterAfter = closestIndx(timesNumeric, Date.parse(monitor.values[i].date)+7200000)
                         // add preceding model point
+                        
+                        
                         modelPts.push(stackedData.filter(function(point){
                             return point.lat == closestLat &&
                                   point.long == closestLon &&
@@ -137,16 +153,23 @@
                                    point.long == closestLon &&
                                    point.x == closestTimeIndex;
                         }));
-                        
                         modelPts[modelPts.length-1].time =  times[closestTimeIndex];
+                        
                         // add subsequent model point
                         modelPts.push(stackedData.filter(function(point){
                             return point.lat == closestLat &&
                                   point.long == closestLon &&
                                   point.x == closestTimeIndexAfter;
                         }));
-                        
                         modelPts[modelPts.length-1].time =  times[closestTimeIndexAfter];
+                        
+                        // add subsequent model point
+                        modelPts.push(stackedData.filter(function(point){
+                            return point.lat == closestLat &&
+                                  point.long == closestLon &&
+                                  point.x == closestTimeIndexAfterAfter;
+                        }));
+                        modelPts[modelPts.length-1].time =  times[closestTimeIndexAfterAfter];
                     }
                 }
             })
@@ -172,7 +195,7 @@
             $(this).toggleClass('clicked')
             var svg = d3.select("svg");
             svg.selectAll("*").remove();
-            modelPtsForBinding = modelPts.slice(spikeIndex*3,spikeIndex*3+3)
+            modelPtsForBinding = modelPts.slice(spikeIndex*4,spikeIndex*4+4)
             console.log(modelPtsForBinding);
             map.setView(spikePtsForBinding[spikeIndex].coordinates, 13)
             console.log(spikePtsForBinding[spikeIndex]);
@@ -193,7 +216,7 @@
         
         
         let spikeZero = $.extend(true,{},spikes[0].measurements);
-        drawChart(spikeZero, modelPts.slice(0,3))
+        drawChart(spikeZero, modelPts.slice(0,4))
       });    
    });
 
@@ -211,7 +234,6 @@
         iconUrl: 'bad.png',
     });
     
-
  
 function onEachFeature(feature, layer) {
         var lat = feature.geometry.coordinates[0];
@@ -423,6 +445,7 @@ function drawChart(data, preModelData) {
 
         let modelData = [];
         for(let i = 0; i < preModelData.length; i++){
+            console.log(preModelData)
             modelData.push({
                 date : Date.parse(preModelData[i].time), //- 3600000, // -1 hour to fix the time zone difference
                 value : preModelData[i][0].value,
