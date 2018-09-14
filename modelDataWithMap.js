@@ -17,7 +17,6 @@
             return L.marker(latlng, {icon: ((feature.properties.PPM > .5) ? readingB : readingG)});
         }
     }).addTo(map);
-    console.log(data);
     L.geoJson(data,{
         onEachFeature: function(feature, layer) {
             if (feature.properties && feature.properties.Sensor) {
@@ -115,9 +114,10 @@
                 let closestLon = closest(lons,monitor.coordinates[1]);
                 let closestTimeIndex;
 
-                for (var i = 0; i < monitor.signalDetection.signals.length ; i++) { //for each measurment in the monitor
+                for (var i = 0; i < monitor.signalDetection.signals.length-2 ; i++) { //for each measurment in the monitor
 
-                    if (parseInt(monitor.values[i+60].value) > 40){//monitor.signalDetection.signals[i][1] === 1 ) { //if the signal value is 1 (ie there is a peak)
+                    if ( parseInt(monitor.values[i+60].value) > 40 ){//&& monitor.signalDetection.signals[i][1] === 1 ) { //if the signal value is 1 (ie there is a peak), signals is not offset at there is no
+
                         spikes.push({
                             id: monitor.id,
                             coordinates: monitor.coordinates,
@@ -127,13 +127,10 @@
                             signal: monitor.signalDetection.signals.slice(i-60,i+60)
                         });
                         
-                        console.log("the monitor date was " + monitor.values[i].date)
-                        console.log("the monitor numeric time was " + Date.parse(monitor.values[i].date))
-                        
+
 
                         // and find the closest time corresponding to that
                         closestTimeIndex = closestIndx(timesNumeric, Date.parse(monitor.values[i].date)) // parses the date to a number and and finds the closest value
-                        console.log("TEST " + monitor.values[i].date + " ---- " +Date.parse(monitor.values[i].date))
                         let closestTimeIndexBefore = closestIndx(timesNumeric, Date.parse(monitor.values[i].date) -3600000) // parses the date to a number and and finds the closest value
                         let closestTimeIndexAfter = closestIndx(timesNumeric, Date.parse(monitor.values[i].date)+3600000) // parses the date to a number and and finds the closest value
                         let closestTimeIndexAfterAfter = closestIndx(timesNumeric, Date.parse(monitor.values[i].date)+7200000)
@@ -173,7 +170,8 @@
                     }
                 }
             })
-        
+        // grabs only one spike per hour
+        spikes = findValidSpikes(spikes);
         // adds a button for each of the spikes
         var spikeDivs = spikeSelectDiv.selectAll("div")
             .data(spikes)
@@ -186,7 +184,7 @@
             .html(function(d){
                 return d.id + "<br/> "+ d.measurements[60].date.slice(0,17)
             });
-
+        
         // attaches functionality to a click event    
         var spikePtsForBinding, modelPtsForBinding;
         $('.spikes').click(function(){
@@ -196,9 +194,7 @@
             var svg = d3.select("svg");
             svg.selectAll("*").remove();
             modelPtsForBinding = modelPts.slice(spikeIndex*4,spikeIndex*4+4)
-            console.log(modelPtsForBinding);
             map.setView(spikePtsForBinding[spikeIndex].coordinates, 13)
-            console.log(spikePtsForBinding[spikeIndex]);
             drawChart(spikePtsForBinding[spikeIndex].measurements, modelPtsForBinding)
         });
         
@@ -222,7 +218,7 @@
 
   var readingG = L.icon({
         iconSize: [27, 27],
-         iconAnchor: [13, 27],
+         iconAnchor: [13, 27], 
          popupAnchor:  [1, -24],
         iconUrl: 'good.png',
     });
@@ -234,7 +230,33 @@
         iconUrl: 'bad.png',
     });
     
- 
+
+function findValidSpikes(spikes){
+    let result = []
+    console.log(spikes)
+    for(let i = 0; i < spikes.length; i++){ // starting at 1 so not to index at spike[-1], No increment as you only want to advance to the next spike in the while loop
+        let encounteredTime = new Date(spikes[i].measurements[60].date)
+        encounteredTime = encounteredTime.getTime()
+        let hourList = [];
+        console.log(spikes[i]);
+        while(i < spikes.length && (Math.abs(encounteredTime - new Date(spikes[i].measurements[60].date).getTime()) < 60*60*1000) ){// while the new spike is still in the same hour
+            console.log(spikes[i])
+            console.log(encounteredTime - new Date(spikes[i].measurements[60].date).getTime())
+            hourList.push(spikes[i]);
+            i++;
+        } 
+        console.log(hourList);
+
+        let max = hourList.reduce(function(prev, current) {
+            return (prev.measurements[60].value > current.measurements[60].value) ? prev : current
+        });
+        
+        result.push(max);
+        i--;
+    }
+    return result
+
+}
 function onEachFeature(feature, layer) {
         var lat = feature.geometry.coordinates[0];
         var lon = feature.geometry.coordinates[1];
@@ -245,7 +267,6 @@ function onEachFeature(feature, layer) {
         if(feature.properties.PPM > .5) {
             mymarker = L.marker([lat, lon], {icon: readingB}).addTo(map);
             popupContent = feature.properties.Sensor
-                    console.log(mymarker)
         } else {
             mymarker = L.marker([lat, lon], {icon: readingG}).addTo(map);
             popupContent = feature.properties.Sensor
@@ -266,7 +287,7 @@ function performSignalDetection(data){
             return;
         }
         let SIG_LAG = 60;
-        let SIG_THRESH = 10;
+        let SIG_THRESH = 5;
         let SIG_INF = .001;
         //monitor.signalDetection = smoothedZScore(monitor.values,SIG_LAG, SIG_THRESH,SIG_INF);
         monitor.signalDetection = smoothedZScore2(monitor.values,SIG_LAG, SIG_THRESH,SIG_INF);
@@ -445,7 +466,6 @@ function drawChart(data, preModelData) {
 
         let modelData = [];
         for(let i = 0; i < preModelData.length; i++){
-            console.log(preModelData)
             modelData.push({
                 date : Date.parse(preModelData[i].time), //- 3600000, // -1 hour to fix the time zone difference
                 value : preModelData[i][0].value,
