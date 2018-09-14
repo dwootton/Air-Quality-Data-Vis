@@ -76,21 +76,6 @@
       timesNumeric.push(q);
     }
     
-    /*
-    let hour = 7;
-    for(var day = 1; day < 14; day++){
-        while(hour < 24){
-          let date = new Date(2018, 02, day, hour, 0)
-          timesNumeric.push(Date.parse(date + "MST"));
-          times.push(date);
-          if(day == 13 && hour == 7){
-              break;
-          }
-          hour++;
-        }
-        hour = 0;
-    }  
-    */
   var processedData;
   
   //grabs the JSON data from sensors and model
@@ -116,57 +101,69 @@
 
                 for (var i = 0; i < monitor.signalDetection.signals.length-2 ; i++) { //for each measurment in the monitor
 
-                    if ( parseInt(monitor.values[i+60].value) > 40 ){//&& monitor.signalDetection.signals[i][1] === 1 ) { //if the signal value is 1 (ie there is a peak), signals is not offset at there is no
+                    if ( parseInt(monitor.values[i+60].value) > 50 ){//&& monitor.signalDetection.signals[i][1] === 1 ) { //if the signal value is 1 (ie there is a peak), signals is not offset at there is no
 
+                        
+                        let spikeModelPts = []
+
+
+                        // and find the closest time corresponding to that
+                        closestTimeIndex = closestIndx(timesNumeric, Date.parse(monitor.values[i+60].date)) // parses the date to a number and and finds the closest value
+                        let closestTimeIndexBeforeBefore = closestIndx(timesNumeric, Date.parse(monitor.values[i+60].date)-7200000)
+                        let closestTimeIndexBefore = closestIndx(timesNumeric, Date.parse(monitor.values[i+60].date) -3600000) // parses the date to a number and and finds the closest value
+                        let closestTimeIndexAfter = closestIndx(timesNumeric, Date.parse(monitor.values[i+60].date)+3600000) // parses the date to a number and and finds the closest value
+                        let closestTimeIndexAfterAfter = closestIndx(timesNumeric, Date.parse(monitor.values[i+60].date)+7200000)
+                        // add preceding model point
+                        
+                        spikeModelPts.push(stackedData.filter(function(point){
+                            return point.lat == closestLat &&
+                                  point.long == closestLon &&
+                                  point.x == closestTimeIndexBeforeBefore;
+                        }));
+                        
+                        spikeModelPts[spikeModelPts.length-1].time =  times[closestTimeIndexBeforeBefore];
+                        
+                        spikeModelPts.push(stackedData.filter(function(point){
+                            return point.lat == closestLat &&
+                                  point.long == closestLon &&
+                                  point.x == closestTimeIndexBefore;
+                        }));
+                        
+                        spikeModelPts[spikeModelPts.length-1].time =  times[closestTimeIndexBefore];
+                        
+                        //push the closest model point onto array
+                        spikeModelPts.push(stackedData.filter(function(point){
+                            return point.lat == closestLat &&
+                                   point.long == closestLon &&
+                                   point.x == closestTimeIndex;
+                        }));
+                        spikeModelPts[spikeModelPts.length-1].time =  times[closestTimeIndex];
+                        
+                        // add subsequent model point
+                        spikeModelPts.push(stackedData.filter(function(point){
+                            return point.lat == closestLat &&
+                                  point.long == closestLon &&
+                                  point.x == closestTimeIndexAfter;
+                        }));
+                        spikeModelPts[spikeModelPts.length-1].time =  times[closestTimeIndexAfter];
+                        
+                        // add subsequent model point
+                        spikeModelPts.push(stackedData.filter(function(point){
+                            return point.lat == closestLat &&
+                                  point.long == closestLon &&
+                                  point.x == closestTimeIndexAfterAfter;
+                        }));
+                        spikeModelPts[spikeModelPts.length-1].time =  times[closestTimeIndexAfterAfter];
+                        
                         spikes.push({
                             id: monitor.id,
                             coordinates: monitor.coordinates,
                             closestModel: [closestLat,closestLon],
                             measurements: monitor.values.slice(i,i+120),// offset by 60 as the lag offsets the dates/times
                             reading: monitor.signalDetection.signals[i],
-                            signal: monitor.signalDetection.signals.slice(i-60,i+60)
+                            signal: monitor.signalDetection.signals.slice(i-60,i+60),
+                            modelData: spikeModelPts
                         });
-                        
-
-
-                        // and find the closest time corresponding to that
-                        closestTimeIndex = closestIndx(timesNumeric, Date.parse(monitor.values[i].date)) // parses the date to a number and and finds the closest value
-                        let closestTimeIndexBefore = closestIndx(timesNumeric, Date.parse(monitor.values[i].date) -3600000) // parses the date to a number and and finds the closest value
-                        let closestTimeIndexAfter = closestIndx(timesNumeric, Date.parse(monitor.values[i].date)+3600000) // parses the date to a number and and finds the closest value
-                        let closestTimeIndexAfterAfter = closestIndx(timesNumeric, Date.parse(monitor.values[i].date)+7200000)
-                        // add preceding model point
-                        
-                        
-                        modelPts.push(stackedData.filter(function(point){
-                            return point.lat == closestLat &&
-                                  point.long == closestLon &&
-                                  point.x == closestTimeIndexBefore;
-                        }));
-                        modelPts[modelPts.length-1].time =  times[closestTimeIndexBefore];
-                        
-                        //push the closest model point onto array
-                        modelPts.push(stackedData.filter(function(point){
-                            return point.lat == closestLat &&
-                                   point.long == closestLon &&
-                                   point.x == closestTimeIndex;
-                        }));
-                        modelPts[modelPts.length-1].time =  times[closestTimeIndex];
-                        
-                        // add subsequent model point
-                        modelPts.push(stackedData.filter(function(point){
-                            return point.lat == closestLat &&
-                                  point.long == closestLon &&
-                                  point.x == closestTimeIndexAfter;
-                        }));
-                        modelPts[modelPts.length-1].time =  times[closestTimeIndexAfter];
-                        
-                        // add subsequent model point
-                        modelPts.push(stackedData.filter(function(point){
-                            return point.lat == closestLat &&
-                                  point.long == closestLon &&
-                                  point.x == closestTimeIndexAfterAfter;
-                        }));
-                        modelPts[modelPts.length-1].time =  times[closestTimeIndexAfterAfter];
                     }
                 }
             })
@@ -193,9 +190,10 @@
             $(this).toggleClass('clicked')
             var svg = d3.select("svg");
             svg.selectAll("*").remove();
-            modelPtsForBinding = modelPts.slice(spikeIndex*4,spikeIndex*4+4)
+            modelPtsForBinding = spikes[spikeIndex].modelData;
             map.setView(spikePtsForBinding[spikeIndex].coordinates, 13)
             drawChart(spikePtsForBinding[spikeIndex].measurements, modelPtsForBinding)
+            console.log(modelPtsForBinding)
         });
         
         // Changes styling if button is hovered
@@ -230,7 +228,12 @@
         iconUrl: 'bad.png',
     });
     
-
+/**
+ * This function works by taking in a JSON array of spikes, determining which 
+ * spikes occur within the same hour, and returning a list that only contains
+ * one spike per hour. If an overlap occurs (ie there is more than one spike 
+ * in an hour), the function will choose the maximum point in that hour period.
+ */
 function findValidSpikes(spikes){
     let result = []
     console.log(spikes)
@@ -252,10 +255,9 @@ function findValidSpikes(spikes){
         });
         
         result.push(max);
-        i--;
+        i--; // subtract by one so that when the for loop increments, you don't skip past the newly encountered spike
     }
     return result
-
 }
 function onEachFeature(feature, layer) {
         var lat = feature.geometry.coordinates[0];
